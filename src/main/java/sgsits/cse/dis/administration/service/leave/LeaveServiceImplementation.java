@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service("leaveService")
 public class LeaveServiceImplementation implements LeaveApplicationService {
@@ -107,7 +108,7 @@ public class LeaveServiceImplementation implements LeaveApplicationService {
 
     @Override
     public List<Leave> getAllLeavesOfAStudent(String studentId) {
-        List<Leave> studentLeaves = leaveRepository.findLeaveByStudentId(studentId).stream().toList();
+        List<Leave> studentLeaves = leaveRepository.findLeaveByStudentId(studentId).stream().collect(Collectors.toList());
         if (!studentLeaves.isEmpty()) {
             return studentLeaves;
         }
@@ -115,7 +116,7 @@ public class LeaveServiceImplementation implements LeaveApplicationService {
     }
 
     public String deleteLeaveByLeaveId(String leaveId) {
-        if (!leaveRepository.findById(leaveId).isEmpty()) {
+        if (leaveRepository.findById(leaveId).isPresent()) {
             leaveRepository.deleteById(leaveId);
             return "Deleted Successfully";
         } else return "Error Deleting the Leave";
