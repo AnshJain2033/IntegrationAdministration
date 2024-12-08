@@ -3,10 +3,7 @@ package sgsits.cse.dis.administration.models;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 @Data
 @Table(name="leaveTable")
@@ -24,6 +21,9 @@ public class Leave {
     public String status;
     @Column(name = "assignedTo")
     public String assignedTo;
-    @Column(name = "fileId")
-    public String fileId;
+//    @Column(name = "fileId")
+//    public String fileId;
+    public Date createdDate;
+    public Date modifiedDate;
+
 }

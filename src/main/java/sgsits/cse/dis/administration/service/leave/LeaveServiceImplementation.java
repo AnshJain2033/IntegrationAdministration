@@ -9,14 +9,14 @@ import sgsits.cse.dis.administration.repo.LeaveRepository;
 import sgsits.cse.dis.administration.repo.StudentRepository;
 import sgsits.cse.dis.administration.dto.request.LeaveRequestForm;
 import sgsits.cse.dis.administration.dto.response.LeaveApplicationResponse;
-import sgsits.cse.dis.administration.service.fileStorage.FileStorageService;
+//import sgsits.cse.dis.administration.service.fileStorage.FileStorageService;
 
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("leaveService")
@@ -25,10 +25,14 @@ public class LeaveServiceImplementation implements LeaveApplicationService {
     LeaveRepository leaveRepository;
     @Autowired
     StudentRepository studentRepository;
-    @Autowired
-    FileStorageService fileStorageService;
+//    @Autowired
+//    FileStorageService fileStorageService;
 
 
+    @Override
+    public Optional<List<Leave>> getLeaveWhichArePendingToBeAssigned(){
+        return leaveRepository.findLeaveWhichArePendingToBeAssigned();
+    }
     @Override
     public String getDescriptionByLeaveId(String leaveId) {
         String description = leaveRepository.findById(leaveId).get().getDescription();
@@ -74,12 +78,13 @@ public class LeaveServiceImplementation implements LeaveApplicationService {
             try {
                 leave.setStartDate(formatter.parse(startDate));
                 leave.setEndDate(formatter.parse(endDate));
+                leave.setCreatedDate(formatter.parse(LocalDate.now().toString()));
             } catch (Exception e) {
             }
             leave.setDescription(description);
             leave.setSubject(subject);
             leave.setStudentId(studentId);
-            leave.setAssignedTo("");
+            leave.setAssignedTo(null);
             leave.setStatus("PENDING");
             try {
                 leave.setId(UUID.randomUUID().toString());
@@ -107,14 +112,15 @@ public class LeaveServiceImplementation implements LeaveApplicationService {
     }
 
     @Override
-    public List<Leave> getAllLeavesOfAStudent(String studentId) {
-        List<Leave> studentLeaves = leaveRepository.findLeaveByStudentId(studentId).stream().collect(Collectors.toList());
-        if (!studentLeaves.isEmpty()) {
+    public Optional<List<Leave>> getAllLeavesOfAStudent(String studentId) {
+        Optional<List<Leave>> studentLeaves = leaveRepository.findLeaveByStudentId(studentId);
+        if (!studentLeaves.get().isEmpty()) {
             return studentLeaves;
         }
         return null;
     }
 
+    @Override
     public String deleteLeaveByLeaveId(String leaveId) {
         if (leaveRepository.findById(leaveId).isPresent()) {
             leaveRepository.deleteById(leaveId);
@@ -123,8 +129,15 @@ public class LeaveServiceImplementation implements LeaveApplicationService {
     }
 
     @Transactional
-    public String putAssignedToByStudentId(String studentId, String assignedTo) {
-        leaveRepository.putAssignedToByStudentId(assignedTo, studentId);
+    public String putAssignedToByLeaveId(String id, String assignedTo) {
+        leaveRepository.putAssignedToByStudentId(assignedTo, id);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try{
+            Leave leave = leaveRepository.findById(id).get();
+            leave.setModifiedDate(formatter.parse(new Date().toString()));
+            leaveRepository.save(leave);
+        }catch (Exception e){}
+
         return "Assigned Successfully";
     }
     @Transactional
@@ -132,24 +145,38 @@ public class LeaveServiceImplementation implements LeaveApplicationService {
         leaveRepository.putLeaveStatusByLeaveId(status,leaveId);
         return "Status Updated Successfully";
     }
-    public List<Leave> getLeavesByAssignedId(String assignedId){
-        if(!leaveRepository.findLeaveByAssignedId(assignedId).isEmpty()){
+    @Override
+    public Optional<List<Leave>> getLeavesByAssignedId(String assignedId){
+        if(!leaveRepository.findLeaveByAssignedId(assignedId).get().isEmpty()){
             return leaveRepository.findLeaveByAssignedId(assignedId);
         }
         else return null;
     }
-
-    public void postLeaveSupportingDocument(String leaveId,MultipartFile file){
-        Optional<Leave> leave = leaveRepository.findById(leaveId);
+    @Override
+    public Optional<List<Leave>> getLeaveByCreatedDate(){
+        Date currentDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try{
-
-            fileStorageService.saveFile(leave.get().getId(),file);
-        }catch(Exception e){
-            System.out.println("Exception Occurred in file upload"+e.getMessage());
-        }
-
-
+            formatter.parse(LocalDate.now().toString());
+          return Optional.of(leaveRepository.findLeaveWhichArePendingAndAssigned().get().stream()
+                  .filter(leave ->
+                          (ChronoUnit.DAYS.between(leave.getCreatedDate().toInstant(),currentDate.toInstant())<5))
+                  .collect(Collectors.toList()));
+        }catch(Exception e){}
+        return null;
     }
+//    public void postLeaveSupportingDocument(String leaveId,MultipartFile file){
+//        Optional<Leave> leave = leaveRepository.findById(leaveId);
+//
+//        try{
+//
+//            fileStorageService.saveFile(leave.get().getId(),file);
+//        }catch(Exception e){
+//            System.out.println("Exception Occurred in file upload"+e.getMessage());
+//        }
+//
+//
+//    }
 
 }

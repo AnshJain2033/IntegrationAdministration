@@ -281,13 +281,15 @@ public class RestAPI {
    * The constant SET_FACULTY_REQUEST_RESOLVED.
    */
   public static final String SET_FACULTY_REQUEST_RESOLVED = "/setFacultyRequestResolved/{id}";
-  public static final String POST_LEAVE_APPLICATION = "/addLeave/{id}";
+  public static final String POST_LEAVE_APPLICATION = "/addLeave";
   public static final String GET_HELLO="/hello";
   public static final String GET_LEAVE_OF_A_STUDENT="/getLeaveByStudentId";
   public static final String DELETE_LEAVE_BY_LEAVE_ID="/deleteLeaveByLeaveId";
-  public static  final String PUT_ASSIGNED_TO_BY_STUDENT_ID="/putAssignedToByStudentId";
+  public static  final String PUT_ASSIGNED_TO_BY_LEAVE_ID="/putAssignedToByLeaveId";
   public static final String PUT_LEAVE_STATUS_BY_LEAVE_ID = "/putLeaveStatusByLeaveId";
   public static final String GET_LEAVE_BY_ASSIGNED_ID = "/getLeaveByAssignedToId";
   public static final String GET_LEAVE_SUPPORTING_DOCUMENTS = "/getLeaveSupportingDocumentById";
   public static final String POST_LEAVE_SUPPORTING_DOCUMENT ="/postLeaveSupportingDocumentById";
+  public static final String GET_LEAVE_WHICH_ARE_PENDING_TO_BE_ASSIGNED ="/getLeaveWhichArePendingToBeAssigned";
+  public static final String GET_LAST_FIVE_DAY_LEAVE = "/getLastFiveDayLeave";
 }

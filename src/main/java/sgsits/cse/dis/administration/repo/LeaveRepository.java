@@ -8,19 +8,29 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LeaveRepository extends JpaRepository<Leave,String> {
     @Query("SELECT leave FROM Leave leave WHERE leave.studentId = :studentId")
-    List<Leave> findLeaveByStudentId(@Param("studentId") String studentId);
+    Optional<List<Leave>> findLeaveByStudentId(@Param("studentId") String studentId);
 
     @Modifying
-    @Query("UPDATE Leave leave SET leave.assignedTo = :assignedTo WHERE leave.studentId = :studentId")
-    void putAssignedToByStudentId(@Param("assignedTo")String assignedTo,@Param("studentId")String studentId);
+    @Query("UPDATE Leave leave SET leave.assignedTo = :assignedTo WHERE leave.id = :id")
+    void putAssignedToByStudentId(@Param("assignedTo")String assignedTo,@Param("id")String id);
     @Modifying
     @Query("UPDATE Leave leave SET leave.status =:status WHERE leave.id =:id")
     void putLeaveStatusByLeaveId(@Param("status")String status,@Param("id")String id);
 
     @Query("SELECT leave FROM Leave leave WHERE leave.assignedTo =:assignedTo AND leave.status = 'PENDING'")
-    List<Leave> findLeaveByAssignedId(@Param("assignedTo") String assignedTO);
+    Optional<List<Leave>> findLeaveByAssignedId(@Param("assignedTo") String assignedTO);
+
+    @Query("SELECT leave FROM Leave leave WHERE leave.assignedTo IS NULL")
+    Optional<List<Leave>> findLeaveWhichArePendingToBeAssigned();
+
+    @Query("SELECT leave FROM Leave leave WHERE leave.assignedTo IS NOT NULL AND leave.status = 'PENDING'")
+    Optional<List<Leave>> findLeaveWhichArePendingAndAssigned();
+
+
+
 }

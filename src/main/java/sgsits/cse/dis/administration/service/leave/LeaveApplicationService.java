@@ -7,6 +7,7 @@ import sgsits.cse.dis.administration.dto.response.LeaveApplicationResponse;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface LeaveApplicationService {
@@ -16,10 +17,12 @@ public interface LeaveApplicationService {
     public Date getLeaveStartDate(String leaveId);
     public Date getLeaveEndDate(String leaveId);
     public LeaveApplicationResponse createLeaveApplcation(LeaveRequestForm leaveApplication);
-    public List<Leave> getAllLeavesOfAStudent(String studentId);
+    public Optional<List<Leave>> getAllLeavesOfAStudent(String studentId);
     public String deleteLeaveByLeaveId(String leaveId);
-    public String putAssignedToByStudentId(String studentId,String assignedTo);
+    public String putAssignedToByLeaveId(String id,String assignedTo);
     public String putLeaveStatusByLeaveId(String status,String leaveId);
-    public List<Leave> getLeavesByAssignedId(String assignedId);
-    public void postLeaveSupportingDocument(String leaveId,MultipartFile file);
+    public Optional<List<Leave>> getLeavesByAssignedId(String assignedId);
+//    public void postLeaveSupportingDocument(String leaveId,MultipartFile file);
+    public Optional<List<Leave>> getLeaveWhichArePendingToBeAssigned();
+    public Optional<List<Leave>> getLeaveByCreatedDate();
 }

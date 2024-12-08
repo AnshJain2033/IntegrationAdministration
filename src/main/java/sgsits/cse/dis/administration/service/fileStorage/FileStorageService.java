@@ -1,10 +1,10 @@
-package sgsits.cse.dis.administration.service.fileStorage;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
-
-public interface FileStorageService {
-    //    public void init();
-    public void saveFile(String leaveId, MultipartFile file) throws Exception;
-    public ResponseEntity<?> load(String leaveId);
-}
+//package sgsits.cse.dis.administration.service.fileStorage;
+//
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.multipart.MultipartFile;
+//
+//public interface FileStorageService {
+//    //    public void init();
+//    public void saveFile(String leaveId, MultipartFile file) throws Exception;
+//    public ResponseEntity<?> load(String leaveId);
+//}
